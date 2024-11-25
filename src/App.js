@@ -1,23 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import axios from 'axios';
 
 function App() {
+  const [longUrl, setLongUrl] = useState('');
+  const [shortUrl, setShortUrl] = useState('');
+
+  const handleSubmit   = async (e) => {
+    e.preventDefault();
+    try {
+          const response = await axios.post('http://localhost:8000/api/shorten', { url: longUrl });
+      setShortUrl(response.data.short_url);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>URL Shortener</h1>
+      <form onSubmit={handleSubmit}>
+        <input type="text" placeholder="Enter long URL" value={longUrl} onChange={(e) => setLongUrl(e.target.value)}   
+ />
+        <button type="submit">Shorten</button>
+      </form>
+      {shortUrl && <p>Shortened URL: <a href={shortUrl}>{shortUrl}</a></p>}
     </div>
   );
 }
